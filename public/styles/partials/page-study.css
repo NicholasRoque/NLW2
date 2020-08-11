@@ -101,7 +101,7 @@ article.teacher-item footer strong{
     color: var(--color-primary);
     display: block;
 }
-article.teacher-item footer button{
+article.teacher-item footer .button{
     width: 20rem;
     height: 5.6rem;
     background-color: var(--color-secondary);

@@ -4,29 +4,85 @@ const proffys = [
     whatsapp:"12997424087",
     bio:"Entusiasta das melhores tecnologias de química avançada. Apaixonado por explodir coisas em laboratório e por mudar a vida das pessoas através de experiências. Mais de 200.000 pessoas já passaram por uma das minhas explosões.",
     subject: "Química",
-    cost:"20",
-    weekday: [],
-    time_from: [],
-    time_to: []}
+    cost:"20,00",
+    weekday: [0],
+    time_from: [720],
+    time_to: [1220]}
 ]
 
+const subjects = [
+    "Artes",
+    "Biologia",
+    "Ciências",
+    "Educação Física",
+    "Física",
+    "Geografia",
+    "História",
+    "Matemática",
+    "Português",
+    "Química",
+]
 
+const weekdays = [
+    "Domingo",
+    "Segunda-feira",
+    "Terça-feira",
+    "Quarta-feira",
+    "Quinta-feira",
+    "Sexta-feira",
+    "Sábado"
+]
 
+//Servidor
 const express = require('express')
 const server = express()
 
-server.use(express.static("public"))
-
-.get("/",(req, res) => {
-    return res.sendFile(__dirname + "/views/index.html")
+//configurando o nunjucks (template engine)
+const nunjucks = require('nunjucks')
+nunjucks.configure('src/views', {
+    express: server,
+    noCache: true,
 })
 
-.get("/study", (req, res) => {
-    return res.sendFile(__dirname + "/views/study.html")
-})
+//#region functions
+function getSubject(subjectNumber) {
+    const position = +subjectNumber - 1
+    return subjects[position]
+}
 
-.get("/give-classes", (req, res) => {
-    return res.sendFile(__dirname + "/views/give-classes.html")
-})
+function pageLanding(req, res){
+    return res.render("index.html")
+}
 
+function pageStudy(req, res){
+    const filters =  req.query
+    return res.render("study.html", {proffys, filters, subjects, weekdays})
+
+}
+
+function pageGiveClasses(req, res){
+    const data = req.query
+    
+    const isNotEmpty = Object.keys(data).length > 0
+    //adicionar os dados a lista de proffys
+    if (isNotEmpty) {
+
+        data.subject = getSubject(data.subject)
+        proffys.push(data)
+        return res.redirect("/study")
+    }
+
+    return res.render("give-classes.html", {subjects, weekdays})
+}
+//#endregion
+
+//Início e configuração do servidor
+server 
+//configurando arquivos estaticos (css, scripts, imagens)
+.use(express.static("public"))
+//rotas da aplicação
+.get("/", pageLanding)
+.get("/study", pageStudy)
+.get("/give-classes", pageGiveClasses)
+//start do servidor
 .listen(5500)
