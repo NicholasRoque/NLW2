@@ -28,7 +28,6 @@ Database.then(async (db) => {
             time_to:1220
         }
     ]
-
     await createProffy(db, {proffyValue, classValue, classScheduleValues})
     
     //consultar dados inseridos
@@ -46,6 +45,15 @@ Database.then(async (db) => {
         JOIN classes ON (classes.proffy_id = proffys.id)
         WHERE classes.proffy_id = 1;
     `)
-    console.log(selectedClassesAndProffys);
+    //console.log(selectedClassesAndProffys);
+
+    const selectClassesSchedules = await db.all(`
+        SELECT class_schedule.*
+        FROM class_schedule
+        WHERE class_schedule.class_id = 1
+        AND class_schedule.weekday = "0"
+        AND class_schedule.time_from <= "520"
+        AND class_schedule.time_to > "520";
+    `)
+    console.log(selectClassesSchedules);
 })
-    
